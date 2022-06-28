@@ -14,6 +14,9 @@ class ViewController: UIViewController {
     let numLabelBG = UIView()
     let numpadBG = UIView()
     let numpadStackView = UIStackView()
+    var btnArr:[[UIButton]] = [[]]
+    var stackArr:[UIStackView] = []
+    let twoD:[[String]] = [["0","1","2","3","4","5","6","7","8","9"], ["AC","±","%"], ["÷","×","−","+",".","="] ]  //2-Dimension arr
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,28 +29,31 @@ class ViewController: UIViewController {
 //        plusBtn.addTarget(self, action: #selector(plusAction), for: .touchUpInside)
 //        view.addSubview(plusBtn)
 //        view.addSubview(numLabel)
+
         numLabelBG.addSubview(numLabel)
-        numpadStackView.addSubview(numpadBG)
         self.view.addSubview(numLabelBG)
-        self.view.addSubview(numpadBG)
+//        self.view.addSubview(numpadBG)
+        self.view.addSubview(numpadStackView)
         setupNumLabel()
         setupNumpad()
+        
     }
-    
+    // MARK: UI design
     func setupNumLabel(){
         let guide=view.safeAreaLayoutGuide
         numLabelBG.translatesAutoresizingMaskIntoConstraints = false
         numLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        numLabelBG.backgroundColor = .lightGray
+        numLabelBG.backgroundColor = .darkGray
         numLabelBG.leadingAnchor.constraint(equalTo: guide.leadingAnchor).isActive = true
         numLabelBG.trailingAnchor.constraint(equalTo: guide.trailingAnchor).isActive = true
         numLabelBG.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
         numLabelBG.heightAnchor.constraint(equalToConstant: 238).isActive = true
         // MARK: setup number label position and
-        numLabel.backgroundColor = .red  //recognize
+//        numLabel.backgroundColor = .red  //recognize
         numLabel.text = "0"
         numLabel.font = numLabel.font.withSize(64)
+        numLabel.textColor = .white
         numLabel.textAlignment = .right
         numLabel.adjustsFontSizeToFitWidth = true
         numLabel.topAnchor.constraint(equalTo: numLabelBG.topAnchor, constant: 138).isActive = true
@@ -55,58 +61,84 @@ class ViewController: UIViewController {
         numLabel.trailingAnchor.constraint(equalTo: numLabelBG.trailingAnchor).isActive = true
         numLabel.leadingAnchor.constraint(equalTo: numLabelBG.leadingAnchor).isActive = true
     }
+    
     func setupNumpad(){
-        numpadBG.backgroundColor = .darkGray
-        numpadBG.translatesAutoresizingMaskIntoConstraints = false
-        numpadBG.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        numpadBG.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        numpadBG.topAnchor.constraint(equalTo: numLabelBG.bottomAnchor).isActive = true
-        numpadBG.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        numpadStackView.translatesAutoresizingMaskIntoConstraints = false
+        numpadStackView.backgroundColor = .darkGray
+        numpadStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        numpadStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        numpadStackView.topAnchor.constraint(equalTo: numLabelBG.bottomAnchor).isActive = true
+        numpadStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         
-        let button = UIButton()
-          button.setTitle("btn 1", for: .normal)
-          button.backgroundColor = UIColor.red
-          button.translatesAutoresizingMaskIntoConstraints = false
-
-          let button2 = UIButton()
-          button2.setTitle("btn 2", for: .normal)
-          button2.backgroundColor = UIColor.gray
-          button2.translatesAutoresizingMaskIntoConstraints = false
-
-          let button3 = UIButton()
-          button3.setTitle("btn 3", for: .normal)
-          button3.backgroundColor = UIColor.brown
-          button3.translatesAutoresizingMaskIntoConstraints = false
-      
         numpadStackView.alignment = .fill
         numpadStackView.distribution = .fillEqually
-        numpadStackView.spacing = 8
-        
-        numpadStackView.addSubview(button)
-        numpadStackView.addSubview(button2)
-        numpadStackView.addSubview(button3)
+        numpadStackView.spacing = 2
+        numpadStackView.axis = .vertical
         
         
+//        let Dict:[String:[String]] = ["numpad":["0","1","2","3","4","5","6","7","8","9","."], "operators":["+","-","*","/","="], "fn":["AC","+/-","%"]]     //Dictionary
+//        let numpadArr:[String] = ["0","1","2","3","4","5","6","7","8","9",".","+","-","*","/","=","AC","+/-","%"] // Array
+
         
+        
+        for i in 0...4{
+            stackArr.append(UIStackView())
+            stackArr[i].translatesAutoresizingMaskIntoConstraints = false
+            stackArr[i].alignment = .fill
+            stackArr[i].distribution = .fillEqually
+            stackArr[i].spacing = 1
+            numpadStackView.addArrangedSubview(stackArr[i])
+            stackArr[i].leadingAnchor.constraint(equalTo: numpadStackView.leadingAnchor).isActive = true
+            stackArr[i].trailingAnchor.constraint(equalTo: numpadStackView.trailingAnchor).isActive = true
+        }
+        
+        var cnt = 0
+        let s = UIStackView()
+        s.alignment = .fill
+        s.distribution = .fillEqually
+        for row in 0..<3{
+            for col in 0..<twoD[row].count{
+                btnArr[row].append(UIButton())
+                btnArr[row][col].translatesAutoresizingMaskIntoConstraints = false
+                btnArr[row][col].setTitle(twoD[row][col], for: .normal)
+                switch row{
+                case 0:
+                    btnArr[row][col].backgroundColor = .black
+                    switch Int(btnArr[row][col].currentTitle!)!{
+                    case 7...9:
+                        stackArr[1].addArrangedSubview(btnArr[row][col])
+                    case 4...6:
+                        stackArr[2].addArrangedSubview(btnArr[row][col])
+                    case 1...3:
+                        stackArr[3].addArrangedSubview(btnArr[row][col])
+                    default:
+                        stackArr[4].addArrangedSubview(btnArr[row][col])
+                    }
+                case 1:
+                    btnArr[row][col].backgroundColor = .lightGray
+                    stackArr[0].addArrangedSubview(btnArr[row][col])
+                case 2:
+                    btnArr[row][col].backgroundColor = UIColor(red: 255/255, green: 170/255, blue: 2/255, alpha: 1)
+                    switch btnArr[row][col].currentTitle{
+                    case ".":
+                        btnArr[row][col].backgroundColor = .black
+                        s.addArrangedSubview(btnArr[row][col])
+                    case "=":
+                        s.addArrangedSubview(btnArr[row][col])
+                    default:
+                        stackArr[cnt].addArrangedSubview(btnArr[row][col])
+                        cnt += 1
+                    }
+                    stackArr[cnt].addArrangedSubview(s)
+                default:
+                    break
+                }
+            }
+            btnArr.append([])
+        }
     }
-    @objc func plusAction(sender:UIButton!){
-        print("this is plus button")
-        numLabel.text="plus"
-    }
-//
-//    @objc func calculateAction(sender:UIButton!, type:String){
-//        switch type{
-//        case "+":
-//            print("this is plus button")
-//        case "-":
-//            print("this is minus button")
-//        case "*":
-//            print("this is multiply button")
-//        case "/":
-//            print("this is divide button")
-//        default:
-//            break
-//        }
-//    }
+    
+    // MARK: Funtion implementation
+    
 }
 
